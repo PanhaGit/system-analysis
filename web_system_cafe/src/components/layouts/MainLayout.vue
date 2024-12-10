@@ -5,15 +5,13 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 
 import { PencilIcon } from '@heroicons/vue/20/solid';
-import { storeToRefs } from "pinia";
-import { globeState } from "../../store/Configstore";
-import { setAcccessToken, setProfile } from "../../store/profile";
+import { request } from "../../store/Configstore"
+import { removeAcccessToken, setAcccessToken, setProfile } from "../../store/profile";
 
 const route = useRoute();
 const router = useRouter();
 
-const { user } = storeToRefs(globeState());
-const state = globeState()
+
 const url = computed(() => route?.path || "");
 const items = [
     { key: "/", label: "ផ្ទាំងគ្រប់គ្រង", icon: "pi pi-home" },
@@ -51,17 +49,20 @@ onMounted(() => {
 // Handle logout
 const handleLogout = async () => {
     try {
-        const res = await state.request("logout", "post")
+        const res = await request("logout", "post");
+        console.log("Response:", res);
 
-        if (res && res.error) {
-            setProfile("")
-            setAcccessToken("")
-            router.push("/login")
+        if (res && !res.error) {
+            removeAcccessToken(); // Clear the token locally
+            setProfile(null); // Clear profile state if needed
+            router.push("/login"); // Redirect to the login page
         }
     } catch (error) {
-        console.log(error)
+        console.error("Error Response:", error.response?.data || error.message);
     }
 };
+
+
 </script>
 
 <template>
@@ -105,7 +106,7 @@ const handleLogout = async () => {
                         <div class="flex items-center flex-col relative">
                             <img src="../../assets/image/user.jpg" alt="User" class="w-8 h-8 rounded-full" />
                             <!-- Display user's name if available -->
-                            <p v-if="user" class="text-sm mt-2">{{ user.name }}</p>
+                            <p v-if="user" class="text-sm mt-2">Admin</p>
                             <!-- Adjust according to your user object -->
                             <!-- drop down -->
                             <div class="absolute right-0 top-4">
