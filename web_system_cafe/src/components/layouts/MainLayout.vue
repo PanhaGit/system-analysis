@@ -3,14 +3,13 @@ import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-
 import { PencilIcon } from '@heroicons/vue/20/solid';
-import { request } from "../../store/Configstore"
-import { removeAcccessToken, setAcccessToken, setProfile } from "../../store/profile";
+import { request } from "../../store/Configstore";
+import { getProfile, removeAcccessToken, setProfile } from "../../store/profile";
 
 const route = useRoute();
 const router = useRouter();
-
+const user = getProfile();
 
 const url = computed(() => route?.path || "");
 const items = [
@@ -26,7 +25,6 @@ const items = [
 
 const currentTime = ref("");
 
-// Update time function
 const updateCurrentTime = () => {
     const now = new Date();
     currentTime.value = now.toLocaleString('en-US', {
@@ -44,29 +42,29 @@ onMounted(() => {
     updateCurrentTime();
     const interval = setInterval(updateCurrentTime, 1000);
     onUnmounted(() => clearInterval(interval));
+    if (!user) {
+        router.push('/login')
+    }
 });
 
-// Handle logout
 const handleLogout = async () => {
     try {
         const res = await request("logout", "post");
         console.log("Response:", res);
 
         if (res && !res.error) {
-            removeAcccessToken(); // Clear the token locally
-            setProfile(null); // Clear profile state if needed
-            router.push("/login"); // Redirect to the login page
+            removeAcccessToken();
+            setProfile(null);
+            router.push("/login");
         }
     } catch (error) {
         console.error("Error Response:", error.response?.data || error.message);
     }
 };
-
-
 </script>
 
 <template>
-    <div class="flex h-screen bg-gray-100">
+    <div v-if="user" class="flex h-screen bg-gray-100">
         <!-- Sidebar -->
         <div class="w-64 bg-white p-3 shadow-sm">
             <ul class="relative">
@@ -106,8 +104,7 @@ const handleLogout = async () => {
                         <div class="flex items-center flex-col relative">
                             <img src="../../assets/image/user.jpg" alt="User" class="w-8 h-8 rounded-full" />
                             <!-- Display user's name if available -->
-                            <p v-if="user" class="text-sm mt-2">Admin</p>
-                            <!-- Adjust according to your user object -->
+                            <p v-if="user" class="text-sm mt-2">{{ user?.name }}</p>
                             <!-- drop down -->
                             <div class="absolute right-0 top-4">
                                 <Menu as="div" class="relative inline-block text-left">
