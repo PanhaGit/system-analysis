@@ -1,51 +1,84 @@
 import axios from "axios";
-import { getAcccessToken, setAcccessToken } from "./profile";
 import { setServerStatus } from "./serverStore";
 import { Config } from "../util/Config";
+import {
+  getAcccessToken,
+  removeAcccessToken,
+  setAcccessToken,
+} from "./profile";
 
-export const request = async (url = "", method = "get", data = {}) => {
-  const access_token = getAcccessToken(); // Get the token
-  const headers = { "Content-Type": "application/json" };
+const handleError = async (err, url) => {
+  const response = err.response;
+  let status = "error";
 
-  try {
-    const res = await axios({
-      url: Config.base_url + url,
-      method: method,
-      data: data,
-      headers: {
-        ...headers,
-        Authorization: "Bearer " + access_token,
-      },
-    });
+  if (response) {
+    status = response.status;
 
-    setServerStatus(200);
-
-    // If a new token is provided, update the stored token
-    if (res.data.token) {
-      setAcccessToken(res.data.token);
-    }
-
-    return res.data;
-  } catch (err) {
-    const response = err.response;
-    if (response) {
-      const status = response.status;
-      if (status === 401) {
-        setServerStatus(403);
-      } else if (
-        response.data &&
-        response.data.error &&
-        response.data.error.state
-      ) {
-        alert("Error: " + response.data.error);
+    if (status === 401) {
+      console.warn("Unauthorized access. Attempting token refresh...");
+      const refreshed = await refreshToken();
+      if (refreshed) {
+        // Retry the original request
+        return request(url, err.config.method, err.config.data);
       } else {
-        setServerStatus(status);
+        console.error("Token refresh failed. Logging out.");
+        removeAcccessToken();
+        window.location.href = "/login"; // Redirect to login
       }
-    } else if (err.code === "ERR_NETWORK") {
-      setServerStatus("error");
+    } else if (status === 422) {
+      console.error("Validation Error:", response.data);
+      setServerStatus(response.data);
+    } else {
+      console.error("Request failed:", {
+        status,
+        message: response.data?.message || "Unknown error",
+        url,
+      });
     }
+  } else if (err.code === "ERR_NETWORK") {
+    console.error("Network Error:", err.message);
+  }
 
-    console.log(">>>Error", err);
+  setServerStatus(status);
+  return false;
+};
+
+export const refreshToken = async () => {
+  try {
+    const res = await axios.post(
+      `${Config.base_url}/v1/refresh`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${getAcccessToken()}` },
+      }
+    );
+    const newToken = res.data.access_token;
+    setAcccessToken(newToken);
+    console.log("Token refreshed successfully.");
+    return true;
+  } catch (err) {
+    console.error("Failed to refresh token:", err.message);
     return false;
   }
+};
+
+export const request = (url = "", method = "get", data = {}) => {
+  const access_token = getAcccessToken();
+  const headers = { "Content-Type": "application/json" };
+
+  return axios({
+    url: `${Config.base_url}${url}`,
+    method,
+    data,
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${access_token}`,
+    },
+    timeout: 5000,
+  })
+    .then((res) => {
+      setServerStatus(200);
+      return res.data;
+    })
+    .catch((err) => handleError(err, url));
 };

@@ -2,8 +2,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
-import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import { PencilIcon } from '@heroicons/vue/20/solid';
+import { ChevronDownIcon, PencilIcon } from "@heroicons/vue/20/solid";
 import { request } from "../../store/Configstore";
 import { getProfile, removeAcccessToken, setProfile } from "../../store/profile";
 
@@ -14,13 +13,13 @@ const user = getProfile();
 const url = computed(() => route?.path || "");
 const items = [
     { key: "/", label: "ផ្ទាំងគ្រប់គ្រង", icon: "pi pi-home" },
-    { key: "/customer", label: "ផ្ទាំងអតិថិជន", icon: "pi pi-users" },
-    { key: "/staff", label: "ផ្ទាំងបុគ្គលិក", icon: "pi pi-users" },
-    { key: "/order", label: "ផ្ទាំងការបញ្ជាទិញ", icon: "pi pi-shopping-cart" },
-    { key: "/expense", label: "ផ្ទាំងការចំណាយ", icon: "pi pi-dollar" },
-    { key: "/pos", label: "ផ្ទាំងការលក់(POS)", icon: "pi pi-credit-card" },
-    { key: "/account_staff", label: "ផ្ទាំងគ្រប់គ្រង់គណនីបុគ្គលិក", icon: "pi pi-user" },
-    { key: "/role", label: "ផ្ទាំងគ្រប់គ្រង់តួនាទីបុគ្គលិក", icon: "pi pi-lock" },
+    { key: "/customer", label: "អតិថិជន", icon: "pi pi-users" },
+    { key: "/employees", label: "និយោជិត", icon: "pi pi-users" },
+    { key: "/order", label: "ការបញ្ជាទិញ", icon: "pi pi-shopping-cart" },
+    { key: "/expense", label: "ការចំណាយ", icon: "pi pi-dollar" },
+    { key: "/pos", label: "ចំណុចលក់", icon: "pi pi-credit-card" },
+    { key: "/account_staff", label: "បុគ្គលិកគណនេយ្យ", icon: "pi pi-user" },
+    { key: "/role", label: "តួនាទី", icon: "pi pi-lock" },
 ];
 
 const currentTime = ref("");
@@ -43,7 +42,7 @@ onMounted(() => {
     const interval = setInterval(updateCurrentTime, 1000);
     onUnmounted(() => clearInterval(interval));
     if (!user) {
-        router.push('/login')
+        router.push('/login');
     }
 });
 

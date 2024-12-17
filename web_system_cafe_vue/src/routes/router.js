@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import Dashboard from "../pages/dashboard/Dashboard.vue";
 import CustomerPage from "../pages/customer/CustomerPage.vue";
-import StaffPage from "../pages/staff/StaffPage.vue";
+import EmployeesPage from "../pages/employees/EmployeesPage.vue";
 import OrderPage from "../pages/order/OrderPage.vue";
 import ExpensePage from "../pages/expense/ExpensePage.vue";
 import POSPage from "../pages/POS/POSPage.vue";
@@ -20,7 +20,7 @@ const routes = [
     children: [
       { path: "", component: Dashboard },
       { path: "/customer", component: CustomerPage },
-      { path: "/staff", component: StaffPage },
+      { path: "/employees", component: EmployeesPage },
       { path: "/order", component: OrderPage },
       { path: "/expense", component: ExpensePage },
       { path: "/pos", component: POSPage },

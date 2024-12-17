@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EmployeesRequests;
 use App\Models\Employees;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeesController extends Controller
 {
@@ -18,7 +19,7 @@ class EmployeesController extends Controller
     public function store(EmployeesRequests $request)
     {
         $validated = $request->validated();
-        $validated['create_by'] = auth()->user()->name;  // Use the global auth() helper
+        $validated['create_by'] = Auth::user()->name;
 
         $create = Employees::create($validated);
 
@@ -38,7 +39,7 @@ class EmployeesController extends Controller
         ]);
     }
 
-    public function update(EmployeesRequests $request, string $id)
+    public function update(EmployeesRequests $request, $id)
     {
         $validated = $request->validated();
 

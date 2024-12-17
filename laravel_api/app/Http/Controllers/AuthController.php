@@ -13,7 +13,8 @@ class AuthController extends Controller
         $getUserAll = User::all();
 
         return response()->json([
-            'Get User All' => $getUserAll
+            'GetUserAll' => $getUserAll,
+            'message' => 'Get all user',
         ]);
     }
     public function register(UserRequest $request)
@@ -92,4 +93,3 @@ class AuthController extends Controller
         ]);
     }
 }
-

@@ -40,9 +40,15 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
+        ],
+        'laravel_api_image' => [
+            'driver' => 'local',
+            'root' => 'C:/xampp/htdocs/laravel_api_image',
+            'url' => env('URL_IMAGE') . '/laravel_api_image',
+            'visibility' => 'public',
         ],
 
         's3' => [
