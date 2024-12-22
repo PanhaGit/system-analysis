@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RoleResuest extends FormRequest
+class OrderDetailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,11 @@ class RoleResuest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:50',
-            'code' => 'string|unique:role,code',
+            'order_detail.*.product_id' => 'required|exists:product,id',
+            'order_detail.*.qty' => 'required|numeric|min:1',
+            'order_detail.*.price' => 'required|numeric|min:0',
+            'order_detail.*.total' => 'required|numeric|min:0',
+            'order_detail.*.discount' => 'nullable|integer|min:0|max:100',
         ];
     }
 }

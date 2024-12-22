@@ -1,11 +1,16 @@
 import axios from "axios";
-import { setServerStatus } from "./serverStore";
 import { Config } from "../util/Config";
 import {
   getAcccessToken,
   removeAcccessToken,
   setAcccessToken,
 } from "./profile";
+import { setServerStatus } from "./serverStore";
+import dayjs from "dayjs";
+
+const logError = (message, details) => {
+  console.error(`[Error] ${message}`, details || "");
+};
 
 const handleError = async (err, url) => {
   const response = err.response;
@@ -18,25 +23,28 @@ const handleError = async (err, url) => {
       console.warn("Unauthorized access. Attempting token refresh...");
       const refreshed = await refreshToken();
       if (refreshed) {
-        // Retry the original request
         return request(url, err.config.method, err.config.data);
       } else {
-        console.error("Token refresh failed. Logging out.");
+        logError("Token refresh failed. Logging out.");
         removeAcccessToken();
-        window.location.href = "/login"; // Redirect to login
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
       }
     } else if (status === 422) {
-      console.error("Validation Error:", response.data);
+      logError("Validation Error:", response.data);
       setServerStatus(response.data);
     } else {
-      console.error("Request failed:", {
+      logError("Request failed:", {
         status,
         message: response.data?.message || "Unknown error",
         url,
       });
     }
   } else if (err.code === "ERR_NETWORK") {
-    console.error("Network Error:", err.message);
+    logError("Network Error:", err.message);
+  } else if (err.code === "ECONNABORTED") {
+    logError("Request Timeout:", err.message);
   }
 
   setServerStatus(status);
@@ -46,7 +54,7 @@ const handleError = async (err, url) => {
 export const refreshToken = async () => {
   try {
     const res = await axios.post(
-      `${Config.base_url}/v1/refresh`,
+      `${Config.base_url}${Config.endpoints.refresh}`,
       {},
       {
         headers: { Authorization: `Bearer ${getAcccessToken()}` },
@@ -57,23 +65,32 @@ export const refreshToken = async () => {
     console.log("Token refreshed successfully.");
     return true;
   } catch (err) {
-    console.error("Failed to refresh token:", err.message);
+    logError("Failed to refresh token:", err.message);
     return false;
   }
 };
 
 export const request = (url = "", method = "get", data = {}) => {
   const access_token = getAcccessToken();
-  const headers = { "Content-Type": "application/json" };
+  const headers = {
+    "Content-Type":
+      data instanceof FormData ? "multipart/form-data" : "application/json",
+    Authorization: `Bearer ${access_token}`,
+  };
+  let param_query = "?";
+  if (method === "get" && data instanceof Object) {
+    Object.keys(data).forEach((key) => {
+      if (data[key] !== "" && data[key] !== null) {
+        param_query += `&${key}=${data[key]}`;
+      }
+    });
+  }
 
   return axios({
-    url: `${Config.base_url}${url}`,
+    url: `${Config.base_url}${url}${param_query}`,
     method,
     data,
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${access_token}`,
-    },
+    headers,
     timeout: 5000,
   })
     .then((res) => {
@@ -82,3 +99,5 @@ export const request = (url = "", method = "get", data = {}) => {
     })
     .catch((err) => handleError(err, url));
 };
+
+export const formatDate = (value) => dayjs(value).format("YYYY-MMM-DD");

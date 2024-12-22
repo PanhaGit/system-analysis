@@ -31,6 +31,11 @@ const items = [
     label: "ផលិតផល",
     icon: <MdOutlineProductionQuantityLimits />,
   },
+  {
+    key: "/category",
+    label: "ប្រភេទផលិតផល",
+    icon: <MdOutlineProductionQuantityLimits />,
+  },
   { key: "/order", label: "ការបញ្ជាទិញ", icon: <MdShoppingCart /> },
   { key: "/expense", label: "ការចំណាយ", icon: <MdAttachMoney /> },
   { key: "/account_staff", label: "បុគ្គលិកគណនេយ្យ", icon: <MdPerson /> },
@@ -150,10 +155,10 @@ const MainLayout = () => {
                   />
                 </div>
                 <div>
-                  <h1 className="text-xl font-medium font-battambang">
-                    អាយធី ស្មោះស្នេហ៍
+                  <h1 className="font-battambang text-2xl font-medium">
+                    ផ្ទះកាហ្វេ 24/7
                   </h1>
-                  <p className="text-sm">IT Smos sne</p>
+                  <p className="font-battambang text-[#F06424]">សូមស្វាគមន៍</p>
                 </div>
               </div>
               {/* Date and User Info */}
@@ -171,10 +176,6 @@ const MainLayout = () => {
                     {user && <p className="text-sm">{user?.name}</p>}
                     {/* Dropdown */}
                     <Dropdown overlay={menu} trigger={["click"]}>
-                      {/* <Button
-                        className="inline-flex w-full justify-center rounded-md text-sm font-medium text-black"
-                        icon={<FaChevronDown className="h-5 w-5 text-black" />}
-                      /> */}
                       <FaChevronDown className="h-5 w-5 text-black" />
                     </Dropdown>
                   </div>
@@ -184,7 +185,7 @@ const MainLayout = () => {
           </header>
 
           {/* Content */}
-          <main className="flex-1 px-4">
+          <main className="flex-1 px-4 overflow-y-auto">
             <Outlet />
           </main>
         </div>

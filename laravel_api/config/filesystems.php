@@ -47,6 +47,7 @@ return [
         'laravel_api_image' => [
             'driver' => 'local',
             'root' => 'C:/xampp/htdocs/laravel_api_image',
+            // 'root' => storage_path('app/laravel_api_image'),
             'url' => env('URL_IMAGE') . '/laravel_api_image',
             'visibility' => 'public',
         ],

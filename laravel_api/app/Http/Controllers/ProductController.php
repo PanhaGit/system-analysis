@@ -1,98 +1,130 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $getAll = Product::all();
+        $txt_search = $request->input('search');
+        $category_id = $request->input('category_id');
+
+        $getAll = DB::table('product')
+            ->join('category', 'product.category_id', '=', 'category.id')
+            ->select('product.*', 'category.name as category_name')
+            ->when($txt_search, function ($query, $txt_search) {
+                return $query->where('product.name', 'like', "%{$txt_search}%")
+                    ->orWhere('category.name', 'like', "%{$txt_search}%");
+            })
+            ->when($category_id, function ($query, $category_id) {
+                return $query->where('product.category_id', $category_id);
+            })
+            ->orderBy('product.created_at', 'desc')
+            ->get();
+
         return response()->json([
-            'getAll' => $getAll
+            'getAll' => $getAll,
         ]);
     }
 
-    public function store(ProductRequest $request)
+
+    public function store(ProductRequest $product)
     {
-        $validated = $request->validated();
+        $product->validated();
 
         if (Auth::check()) {
-            $validated['create_by'] = Auth::user()->name;
+            $product['create_by'] = Auth::user()->name;
         } else {
             return response()->json([
                 'message' => 'User not authenticated.',
             ], 401);
         }
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'laravel_api_image');
-            $validated['image'] = $imagePath;
+
+        $dataForFind = $product->all();
+
+        if ($product->hasFile('image')) {
+            $dataForFind['image'] = $product->file('image')->store('products', 'laravel_api_image');
+            /**
+             * ****************** process ****************** :
+             * $dataForFind['image']=products/RriQzVaw784LDv604GzXr0wBFFeHsvs7Up3uVvCG.png
+             * http://localhost/laravel_api_image/products/RriQzVaw784LDv604GzXr0wBFFeHsvs7Up3uVvCG.png
+             */
         }
 
-        // Create the product
-        $product = Product::create($validated);
+
+        $product = Product::create($dataForFind);
 
         return response()->json([
             'message' => 'Product created successfully!',
             'product' => $product,
+            'image' => $product->image ?? null,
         ], 201);
     }
 
-    public function update(ProductRequest $request, $id)
+
+
+    public function update(ProductRequest $request, Product $product)
     {
-        $validated = $request->validated();
+        try {
 
-        // Find the product by ID or fail if not found
-        $product = Product::findOrFail($id);
+            $validatedData = $request->validated();
 
-        // Handle new image upload
-        if ($request->hasFile('image')) {
-            // If the product already has an image, remove the old image
-            if ($product->image) {
+
+            if (!empty($request->image_remove) && $product->image) {
                 $this->removeOldImage($product->image);
+                $validatedData['image'] = null;
             }
 
-            // Store the new image
-            $imagePath = $request->file('image')->store('products', 'laravel_api_image');
-            $validated['image'] = $imagePath;
-        }
-
-        // Handle image removal
-        if ($request->has('image_remove') && $request->image_remove == 1) {
-            // If image_remove is 1, remove the current image
-            if ($product->image) {
-                $this->removeOldImage($product->image);
+            // new image upload
+            if ($request->hasFile('image')) {
+                if ($product->image) {
+                    $this->removeOldImage($product->image); // Remove the old image
+                }
+                $validatedData['image'] = $request->file('image')->store('products', 'laravel_api_image');
             }
-            $validated['image'] = null; // Set image to null to remove it from the database
+
+            // Update the product with all validated data
+            $product->update($validatedData);
+
+            return response()->json([
+                'message' => 'Product updated successfully!',
+                'product' => $product,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while updating the product.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Update the product with the validated data
-        $product->update($validated);
-
-        return response()->json([
-            'message' => 'Product updated successfully!',
-            'product' => $product,
-        ], 200);
     }
+    // protected function handleImageUpload($productRequest, $product)
+    // {
+    //     // Generate a new image name
+    //     $imageName = time() . '.' . $productRequest->image->extension();
+    //     $path = $productRequest->image->storeAs('images', $imageName, 'laravel_api_image');
 
-    /**
-     * Remove the old image from the storage.
-     *
-     * @param string $imagePath
-     * @return void
-     */
-    private function removeOldImage($imagePath)
+    //     // Remove old image if it exists
+    //     $this->removeOldImage($product->image);
+
+    //     return $path;
+    // }
+
+
+    protected function removeOldImage($imagePath)
     {
-        $imagePath = storage_path('products' . $imagePath);
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
+        if (Storage::disk('laravel_api_image')->exists($imagePath)) {
+            Storage::disk('laravel_api_image')->delete($imagePath);
         }
     }
+
 
     public function destroy($id)
     {
