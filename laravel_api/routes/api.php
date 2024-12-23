@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
@@ -23,6 +24,7 @@ Route::prefix('v1')->middleware(['validateToken'])->group(function () {
     Route::apiResource('/role', RoleController::class);
     Route::apiResource('/payments', PaymentMethodController::class);
     Route::apiResource('/order', OrderController::class);
+    Route::apiResource('/dashboard', DashboardController::class);
 });
 
 // public routes

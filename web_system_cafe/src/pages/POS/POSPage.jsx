@@ -40,6 +40,9 @@ const POSPage = () => {
 
     customer_id: null,
     payment_method: null,
+
+    order_num: null, // set after order
+    order_date: null,
   });
   const refInvoice = React.useRef(null);
   useEffect(() => {
@@ -48,7 +51,6 @@ const POSPage = () => {
     getCustomer();
     getPaymentMedthod();
   }, []);
-  // add menu for fillter
 
   const getCustomer = async () => {
     try {
@@ -196,7 +198,7 @@ const POSPage = () => {
     handleCalSummary();
   };
 
-  const handleClearCar = () => {
+  const handleClearCart = () => {
     setState((pre) => ({ ...pre, cart_list: [] }));
 
     setObjSummary((pre) => ({
@@ -300,11 +302,19 @@ const POSPage = () => {
       console.log("Response:", resOrder);
 
       if (resOrder && resOrder.order) {
-        message.success("Order Complete");
+        message.success("Order complete");
+        //ddd
+        setObjSummary((pre) => ({
+          ...pre,
+          order_num: resOrder?.order.order_num,
+          order_date: resOrder?.order.created_at,
+        }));
+        setTimeout(() => {
+          handlePrintInvoice();
+        }, 500);
       } else {
         message.warning("Order not complete!");
       }
-      handleClearCar();
       // setState((p) => ({ ...p, cart_list: [] }));
       // setObjSummary((p)=>({...p,}))
     } catch (error) {
@@ -318,7 +328,7 @@ const POSPage = () => {
   }, []);
 
   const onAfterPrint = React.useCallback((event) => {
-    // handleClearCart();
+    handleClearCart();
     console.log("`onAfterPrint` called", event);
   }, []);
 
@@ -353,6 +363,7 @@ const POSPage = () => {
               <Select
                 allowClear
                 className="w-60"
+                defaultValue={"អតិថិជនទូទៅ"}
                 placeholder="Please Select Customer"
                 onChange={(value) => {
                   setObjSummary((prev) => ({
@@ -511,7 +522,7 @@ const POSPage = () => {
                 <Col span={12}>
                   <button
                     className="w-full py-2 bg-[#FF7A3E] font-battambang text-2xl hover:bg-[#FF7A3E]"
-                    onClick={handleClearCar}
+                    onClick={handleClearCart}
                   >
                     ផ្កាកការកម្មង់
                   </button>
@@ -526,7 +537,9 @@ const POSPage = () => {
                   </button>
                 </Col>
               </Row>
-              <Row>
+
+              {/* test print */}
+              {/* <Row>
                 <Col>
                   <button
                     className="w-full py-2 bg-[#82EA82] font-battambang text-2xl hover:bg-[#82EA82]"
@@ -535,7 +548,7 @@ const POSPage = () => {
                     Print
                   </button>
                 </Col>
-              </Row>
+              </Row> */}
             </div>
           </div>
           {/* {state.cart_list?.map((item, index) => (

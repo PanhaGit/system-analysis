@@ -30,6 +30,7 @@ class OrderController extends Controller
         }
     }
 
+    // Controller method
     public function store(OrderRequest $orderRequest, OrderDetailRequest $orderDetailRequest)
     {
         try {
@@ -60,9 +61,13 @@ class OrderController extends Controller
                 Product::where('id', $orderDetail['product_id'])->decrement('qty', $orderDetail['qty']);
             }
 
+            // Current order data
+            $currentOrder = Order::with('orderDetail')->find($order_create->id);
+
             return response()->json([
                 'message' => 'Order successfully created.',
-                'order' => $order_create,
+                'order' => $currentOrder,
+                'order_detail' => $orderDetailRequest
             ], 200);
         } catch (\Exception $e) {
             Log::error('Failed to order: ' . $e->getMessage(), [
@@ -76,6 +81,7 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
 
 
     public function OrderNumber()

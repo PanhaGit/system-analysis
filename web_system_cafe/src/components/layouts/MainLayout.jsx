@@ -7,8 +7,6 @@ import {
   MdHome,
   MdPerson,
   MdShoppingCart,
-  MdLock,
-  MdAttachMoney,
   MdOutlineProductionQuantityLimits,
 } from "react-icons/md";
 import { BsShop } from "react-icons/bs";
@@ -37,9 +35,9 @@ const items = [
     icon: <MdOutlineProductionQuantityLimits />,
   },
   { key: "/order", label: "ការបញ្ជាទិញ", icon: <MdShoppingCart /> },
-  { key: "/expense", label: "ការចំណាយ", icon: <MdAttachMoney /> },
-  { key: "/account_staff", label: "បុគ្គលិកគណនេយ្យ", icon: <MdPerson /> },
-  { key: "/role", label: "តួនាទី", icon: <MdLock /> },
+  // { key: "/expense", label: "ការចំណាយ", icon: <MdAttachMoney /> },
+  // { key: "/account_staff", label: "បុគ្គលិកគណនេយ្យ", icon: <MdPerson /> },
+  // { key: "/role", label: "តួនាទី", icon: <MdLock /> },
 ];
 
 const MainLayout = () => {

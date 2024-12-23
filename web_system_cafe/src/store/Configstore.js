@@ -91,7 +91,6 @@ export const request = (url = "", method = "get", data = {}) => {
     method,
     data,
     headers,
-    timeout: 5000,
   })
     .then((res) => {
       setServerStatus(200);
