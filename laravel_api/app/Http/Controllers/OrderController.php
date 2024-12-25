@@ -16,7 +16,16 @@ class OrderController extends Controller
     public function index()
     {
         try {
-            $order = Order::all();
+            // $order = Order::orderBy('created_at', 'desc')->get();
+
+            $order = DB::table('order as r')
+                ->leftJoin('customer as cus', 'r.customer_id', '=', 'cus.id')
+                ->leftJoin('users as u', 'r.user_id', '=', 'u.id')
+                ->select('r.*', 'cus.name as customer_name', 'u.name as user_name')
+                ->orderByDesc('r.created_at')
+                ->get();
+
+
             return response()->json([
                 'getAll' => $order
             ]);
@@ -29,6 +38,7 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
 
     // Controller method
     public function store(OrderRequest $orderRequest, OrderDetailRequest $orderDetailRequest)
@@ -116,7 +126,12 @@ class OrderController extends Controller
                 ], 400);
             }
 
-            $order = Order::find($id);
+            $order = DB::table('	order_detail as r')
+                ->leftJoin('customer as cus', 'r.customer_id', '=', 'cus.id')
+                ->leftJoin('users as u', 'r.user_id', '=', 'u.id')
+                ->select('r.*', 'cus.name as customer_name', 'u.name as user_name')
+                ->where('r.id', '=', $id)
+                ->first();
 
             if (!$order) {
                 return response()->json([

@@ -26,7 +26,7 @@ class OrderRequest extends FormRequest
             'user_id' => 'exists:users,id',
             'paid_amount' => 'required|numeric|min:0',
             'payment_method' => 'required|string',
-            'remark' => 'required|string|max:255',
+            'remark' => 'string|max:255',
         ];
     }
 }

@@ -30,7 +30,6 @@ class RoleController extends Controller
     public function store(RoleResuest $roleRequest)
     {
         try {
-            // Generate a new role code
             $newCode = $this->newRoleCode();
 
             if (!$newCode) {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
+use Illuminate\Container\Attributes\DB;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
@@ -12,6 +13,7 @@ class CustomerController extends Controller
     {
         try {
             $getAll = Customer::all();
+            // $getAll = DB::table('customer');
 
             return response()->json([
                 'getAll' => $getAll

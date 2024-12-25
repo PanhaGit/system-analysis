@@ -50,11 +50,7 @@ const LoginPage = () => {
                   { type: "email", message: "សូមបញ្ចូលអ៊ីម៉ែលដែលត្រឹមត្រូវ!" },
                 ]}
               >
-                <Input
-                  type="email"
-                  placeholder="បញ្ចូលអ៊ីម៉ែលរបស់អ្នក"
-                  className="font-battambang"
-                />
+                <Input type="email" placeholder="បញ្ចូលអ៊ីម៉ែលរបស់អ្នក" />
               </Form.Item>
 
               <Form.Item
@@ -65,10 +61,7 @@ const LoginPage = () => {
                   { required: true, message: "សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នក!" },
                 ]}
               >
-                <Input.Password
-                  placeholder="បញ្ចូលពាក្យសម្ងាត់របស់អ្នក"
-                  className="font-battambang"
-                />
+                <Input.Password placeholder="បញ្ចូលពាក្យសម្ងាត់របស់អ្នក" />
               </Form.Item>
 
               <Form.Item>
@@ -87,7 +80,7 @@ const LoginPage = () => {
               <p className="text-sm text-gray-600 font-battambang">
                 មិនមានគណនីទេ?
                 <a
-                  href="/register"
+                  href="/#"
                   className="text-blue-500 hover:underline font-battambang"
                 >
                   ចុះឈ្មោះ
@@ -107,23 +100,17 @@ const LoginPage = () => {
             <Form.Item
               label="អ៊ីម៉ែល"
               name="email"
-              className="font-battambang"
               rules={[
                 { required: true, message: "សូមបញ្ចូលអ៊ីម៉ែលរបស់អ្នក!" },
                 { type: "email", message: "សូមបញ្ចូលអ៊ីម៉ែលដែលត្រឹមត្រូវ!" },
               ]}
             >
-              <Input
-                type="email"
-                placeholder="បញ្ចូលអ៊ីម៉ែលរបស់អ្នក"
-                className="font-battambang"
-              />
+              <Input type="email" placeholder="បញ្ចូលអ៊ីម៉ែលរបស់អ្នក" />
             </Form.Item>
 
             <Form.Item
               label="ពាក្យសម្ងាត់"
               name="password"
-              className="font-battambang"
               rules={[
                 { required: true, message: "សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នក!" },
               ]}
@@ -150,7 +137,7 @@ const LoginPage = () => {
             <p className="text-sm text-gray-600 font-battambang">
               មិនមានគណនីទេ?
               <a
-                href="/register"
+                href="#"
                 className="text-blue-500 hover:underline font-battambang"
               >
                 ចុះឈ្មោះ

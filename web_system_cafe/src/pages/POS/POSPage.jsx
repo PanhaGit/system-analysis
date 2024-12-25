@@ -32,9 +32,11 @@ const POSPage = () => {
   const [objSummary, setObjSummary] = useState({
     save_discount: 0,
     total_price: 0,
+    //aaa
     total_price_discount_USD: 0,
     total_price_discount_KHR: 0,
     total_qty: 0,
+
     remark: null,
     paid_amount: 0,
 
@@ -210,7 +212,7 @@ const POSPage = () => {
       total_qty: 0,
       remark: null,
       paid_amount: 0,
-
+      //bbb
       customer_id: null,
       payment_method: null,
     }));
@@ -311,7 +313,7 @@ const POSPage = () => {
         }));
         setTimeout(() => {
           handlePrintInvoice();
-        }, 500);
+        }, 550);
       } else {
         message.warning("Order not complete!");
       }
@@ -363,7 +365,7 @@ const POSPage = () => {
               <Select
                 allowClear
                 className="w-60"
-                defaultValue={"អតិថិជនទូទៅ"}
+                value={objSummary.customer_id}
                 placeholder="Please Select Customer"
                 onChange={(value) => {
                   setObjSummary((prev) => ({
@@ -434,7 +436,7 @@ const POSPage = () => {
                     <span> {objSummary.total_qty}</span>
                   </p>
                   <span className="font-battambang">តម្លៃសរុប:</span>{" "}
-                  <span>${objSummary.total}</span>
+                  <span> ${objSummary.total_price_discount_USD}</span>
                 </p>
                 <p className="text-xl">
                   <span className="font-battambang">បញ្ចុះតម្លៃ:</span>{" "}

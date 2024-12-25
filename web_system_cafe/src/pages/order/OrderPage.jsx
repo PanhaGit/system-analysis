@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import MainPage from "../../components/layouts/auth/MainPage";
-import { Button, message, Modal, Space, Table } from "antd";
-import { formatDate, request } from "../../store/Configstore";
+import { Button, message, Modal, Space, Table, Tag } from "antd";
+import { request } from "../../store/Configstore";
 import { LuView } from "react-icons/lu";
+import dayjs from "dayjs";
 
 const OrderPage = () => {
   const [state, setState] = useState({
     list: [],
     loading: false,
     modalVisible: false,
-    order_vuew_one: null,
+    order_vuew_one: [],
   });
 
   useEffect(() => {
@@ -51,11 +52,13 @@ const OrderPage = () => {
 
   const handleViewOne = async (id) => {
     try {
-      const res = await request(`order/${id}`, "get");
+      const res = await request(`order_detail/${id}`, "get");
+      console.log(res);
       if (res) {
         setState((prev) => ({
           ...prev,
-          order_vuew_one: res.order,
+          order_vuew_one: res.get_one,
+
           modalVisible: true,
         }));
       } else {
@@ -71,87 +74,107 @@ const OrderPage = () => {
       <div>
         <h1>Category Total: {state.list.length}</h1>
       </div>
-
       <Modal
+        className="w-full overflow-hidden"
         open={state.modalVisible}
         onCancel={() => setState((prev) => ({ ...prev, modalVisible: false }))}
         title="View Order"
-        // footer={null}
       >
-        {state.order_vuew_one ? (
-          <div>
-            <p>
-              <strong>Customer ID:</strong> {state.order_vuew_one.customer_id}
-            </p>
-            <p>
-              <strong>User ID:</strong> {state.order_vuew_one.user_id}
-            </p>
-            <p>
-              <strong>Order Number:</strong> {state.order_vuew_one.order_num}
-            </p>
-            <p>
-              <strong>Paid Amount:</strong> {state.order_vuew_one.paid_amount}
-            </p>
-            <p>
-              <strong>Payment Method:</strong>{" "}
-              {state.order_vuew_one.payment_method}
-            </p>
-            <p>
-              <strong>Remark:</strong> {state.order_vuew_one.remark}
-            </p>
-            <p>
-              <strong>Created At:</strong>{" "}
-              {formatDate(state.order_vuew_one.created_at)}
-            </p>
-          </div>
-        ) : (
-          <p>Loading...</p>
-        )}
+        <Table
+          className="overflow-x-auto"
+          dataSource={state.order_vuew_one}
+          columns={[
+            {
+              key: "p_category_name",
+              dataIndex: "p_category_name",
+              title: "Category Name",
+            },
+            {
+              key: "user_name",
+              dataIndex: "user_name",
+              title: "Username",
+            },
+            {
+              key: "order_num",
+              dataIndex: "order_num",
+              title: "Order Number",
+            },
+            {
+              key: "paid_amount",
+              dataIndex: "paid_amount",
+              title: "Paid Amount",
+            },
+            {
+              key: "payment_method",
+              dataIndex: "payment_method",
+              title: "Payment Method",
+            },
+            {
+              key: "remark",
+              dataIndex: "remark",
+              title: "Remark",
+            },
+            {
+              key: "created_at",
+              dataIndex: "created_at",
+              title: "Created At",
+              render: (val) => {
+                return dayjs(val).format("YYYY-MM-DD HH:mm:ss");
+              },
+            },
+          ]}
+          pagination={false}
+        />
       </Modal>
 
       <Table
         dataSource={state.list}
         columns={[
           {
-            key: "customer_id",
-            dataIndex: "customer_id",
-            title: "customer_id",
+            key: "customer_name",
+            dataIndex: "customer_name",
+            title: "Customer Name",
           },
           {
-            key: "user_id",
-            dataIndex: "user_id",
-            title: "user_id",
+            key: "user_name",
+            dataIndex: "user_name",
+            title: "Name",
           },
           {
             key: "order_num",
             dataIndex: "order_num",
-            title: "order_num",
+            title: "Order NO",
           },
           {
             key: "paid_amount",
             dataIndex: "paid_amount",
-            title: "paid_amount",
+            title: "Paid Amount",
           },
           {
-            key: "payment_method",
+            key: "ayment_method",
             dataIndex: "payment_method",
-            title: "payment_method",
+            title: "Payment Method",
           },
           {
             key: "remark",
             dataIndex: "remark",
-            title: "remark",
+            title: "Remark",
           },
           {
             key: "create_by",
             dataIndex: "create_by",
             title: "Create By",
+            render: (val) => {
+              return <Tag color="geekblue">{val}</Tag>;
+            },
           },
           {
             key: "created_at",
             dataIndex: "created_at",
-            title: "Created At",
-            render: (value) => formatDate(value),
+            title: "Order Time",
+            render: (value) => {
+              return dayjs(value).format("YYYY-MM-DD HH:mm A");
+            },
           },
           {
             title: "Action",

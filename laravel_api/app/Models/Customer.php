@@ -19,8 +19,8 @@ class Customer extends Model
         'create_by',
     ];
 
-    // public function order()
-    // {
-    //     return $this->hasMany(Order::class, 'customer_id');
-    // }
+    public function order()
+    {
+        return $this->hasMany(Order::class, 'customer_id');
+    }
 }

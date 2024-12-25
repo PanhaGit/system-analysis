@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\OrderDetailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
@@ -25,6 +26,7 @@ Route::prefix('v1')->middleware(['validateToken'])->group(function () {
     Route::apiResource('/payments', PaymentMethodController::class);
     Route::apiResource('/order', OrderController::class);
     Route::apiResource('/dashboard', DashboardController::class);
+    Route::apiResource('/order_detail', OrderDetailController::class);
 });
 
 // public routes
